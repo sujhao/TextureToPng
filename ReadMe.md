@@ -7,13 +7,17 @@
 ```
 npm install xml2js
 
-Node.js轻量级跨平台图像编解码库  //windows系统不支持，换个技术
-npm install images   //windows系统不支持，换个技术
+npm install canvas
 ```
 
-## 下载ImageMagick 
 ```
+## 下载ImageMagick 
 https://imagemagick.org/script/download.php
+
+
+## 下载GraphicsMagick
+http://www.graphicsmagick.org/download.html
+
 ```
 
 ```
