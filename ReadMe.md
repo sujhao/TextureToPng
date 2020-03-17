@@ -5,21 +5,14 @@
 ## nodejs实现
 
 ```
-npm install xml2js
+npm install xml2js   //xml文件读取
 
-npm install canvas
+npm install canvas  //图片剪切
 ```
 
+## main.js做了啥
 ```
-## 下载ImageMagick 
-https://imagemagick.org/script/download.php
-
-
-## 下载GraphicsMagick
-http://www.graphicsmagick.org/download.html
-
+读取分析textures.plist文件，然后根据描述裁剪切textures.png文件输出到output目录
 ```
 
-```
-npm install gm
-```
+

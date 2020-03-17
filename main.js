@@ -1,18 +1,24 @@
 console.log("把texturepacker导出的图重新分离出一堆Png碎图工具")
+"use strict"
 
 const fs = require("fs");
 const path = require("path");
 const parseString = require('xml2js').parseString;
-// const gm = require('gm').subClass({imageMagick: true});
-const gm = require('gm')
 const { createCanvas, loadImage } = require('canvas')
 
 
-// let plistStr = fs.readFileSync("./textures.plist").toString();
 let plistStr = fs.readFileSync("./textures.plist", "utf-8")
+let inputTexturePath = "./textures.png"
+
+let outputPath = "./output"
+
+if (!fs.existsSync(outputPath)) {
+    console.log('文件夹不存在', outputPath);
+    fs.mkdirSync(outputPath)
+}
 
 console.log("plistStr==", plistStr)
-parseString(plistStr, (err, result) => {
+parseString(plistStr, async (err, result) => {
     if (err) {
         console.error("格式化xml失败", err)
         return;
@@ -21,24 +27,28 @@ parseString(plistStr, (err, result) => {
     console.log("obj=", obj);
     let key = obj["key"]
     let dict = obj["dict"]
-    console.log("key=", key.length, dict.length);
+    const myimg = await loadImage(inputTexturePath)
     for (let i = 0; i < key.length; i++) {
-        console.log("key=", i, key[i]);
-        console.log("dict ii=", i, dict[i]);
+        let filePath = path.join(outputPath, key[i])
+        let stringArr = dict[i]["string"]
+        let stringReplace = stringArr[3].replace(/{/g, "")
+        stringReplace = stringReplace.replace(/}/g, "")
+        let location = stringReplace.split(",")
+        let startX = parseInt(location[0])
+        let startY = parseInt(location[1])
+        let pngWidth = parseInt(location[2])
+        let pngHeight = parseInt(location[3]);
+        // if (i == 0) {
+            console.log("filePath=", filePath);
+            console.log("startX==", startX);
+            console.log("startY==", startY);
+            console.log("pngWidth==", pngWidth);
+            console.log("pngHeight==", pngHeight);
+            let canvas = createCanvas(pngWidth, pngHeight)
+            let ctx = canvas.getContext('2d')
+            ctx.drawImage(myimg, startX, startY, pngWidth, pngHeight, 0, 0, pngWidth, pngHeight)
+            let buf2 = canvas.toBuffer('image/png', { compressionLevel: 1, filters: canvas.PNG_FILTER_NONE })
+            fs.writeFileSync(filePath, buf2)
+        // }
     }
-
-    // let texture = images("./textures.png", 1, 1, 765,72);
-    let realPath = path.join(__dirname, "/resize.png")
-    console.log("realPath=", realPath)
-
-    const canvas = createCanvas(765, 72)
-    const ctx = canvas.getContext('2d')
-    // Draw cat with lime helmet
-    loadImage('./textures.png').then((image) => {
-        ctx.drawImage(image, 1, 1, 765, 72, 0, 0, 765, 72)
-        // ctx.drawImage(image, 1, 1, 765, 72)
-        const buf2 = canvas.toBuffer('image/png', { compressionLevel: 1, filters: canvas.PNG_FILTER_NONE })
-        console.log('buf===', buf2)
-        fs.writeFileSync("./test.png", buf2)
-    })
 });
