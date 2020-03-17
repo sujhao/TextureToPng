@@ -30,6 +30,9 @@ parseString(plistStr, async (err, result) => {
     const myimg = await loadImage(inputTexturePath)
     for (let i = 0; i < key.length; i++) {
         let filePath = path.join(outputPath, key[i])
+        // console.log("dict[i]=", dict[i]);
+        let keyArr = dict[i]["key"]
+        // console.log("keyArr=",keyArr);
         let stringArr = dict[i]["string"]
         let stringReplace = stringArr[3].replace(/{/g, "")
         stringReplace = stringReplace.replace(/}/g, "")
@@ -38,17 +41,21 @@ parseString(plistStr, async (err, result) => {
         let startY = parseInt(location[1])
         let pngWidth = parseInt(location[2])
         let pngHeight = parseInt(location[3]);
-        // if (i == 0) {
-            console.log("filePath=", filePath);
-            console.log("startX==", startX);
-            console.log("startY==", startY);
-            console.log("pngWidth==", pngWidth);
-            console.log("pngHeight==", pngHeight);
-            let canvas = createCanvas(pngWidth, pngHeight)
-            let ctx = canvas.getContext('2d')
-            ctx.drawImage(myimg, startX, startY, pngWidth, pngHeight, 0, 0, pngWidth, pngHeight)
-            let buf2 = canvas.toBuffer('image/png', { compressionLevel: 1, filters: canvas.PNG_FILTER_NONE })
-            fs.writeFileSync(filePath, buf2)
-        // }
+        let isRotate = false;
+        if(dict[i]["true"] && dict[i]["true"].length == 1){
+            isRotate = true;
+            pngWidth = pngHeight
+            pngHeight = parseInt(location[2])
+        }
+        console.log("filePath=", filePath, isRotate);
+        // console.log("startX==", startX);
+        // console.log("startY==", startY);
+        // console.log("pngWidth==", pngWidth);
+        // console.log("pngHeight==", pngHeight);
+        let canvas = createCanvas(pngWidth, pngHeight)
+        let ctx = canvas.getContext('2d')
+        ctx.drawImage(myimg, startX, startY, pngWidth, pngHeight, 0, 0, pngWidth, pngHeight)
+        let buf2 = canvas.toBuffer('image/png', { compressionLevel: 1, filters: canvas.PNG_FILTER_NONE })
+        fs.writeFileSync(filePath, buf2)
     }
 });
