@@ -42,10 +42,12 @@ parseString(plistStr, async (err, result) => {
         let pngWidth = parseInt(location[2])
         let pngHeight = parseInt(location[3]);
         let isRotate = false;
-        if(dict[i]["true"] && dict[i]["true"].length == 1){
+        let tempValue = 0;
+        if (dict[i]["true"] && dict[i]["true"].length == 1) {
             isRotate = true;
+            tempValue = pngWidth;
             pngWidth = pngHeight
-            pngHeight = parseInt(location[2])
+            pngHeight = tempValue;
         }
         console.log("filePath=", filePath, isRotate);
         // console.log("startX==", startX);
@@ -55,7 +57,15 @@ parseString(plistStr, async (err, result) => {
         let canvas = createCanvas(pngWidth, pngHeight)
         let ctx = canvas.getContext('2d')
         ctx.drawImage(myimg, startX, startY, pngWidth, pngHeight, 0, 0, pngWidth, pngHeight)
-        let buf2 = canvas.toBuffer('image/png', { compressionLevel: 1, filters: canvas.PNG_FILTER_NONE })
+        let buf2 = canvas.toBuffer('image/png', { compressionLevel:6, filters: canvas.PNG_FILTER_NONE })
         fs.writeFileSync(filePath, buf2)
+        // if(isRotate){ //本来想把由于合图旋转的图片旋转回来，发现写的不对，注释掉
+        //     let rotatePic = await loadImage(filePath)
+        //     canvas = createCanvas(pngHeight, pngWidth)
+        //     ctx = canvas.getContext('2d')
+        //     ctx.drawImage(rotatePic, 0, 0, pngWidth, pngHeight, 0, 0, pngHeight, pngWidth)
+        //     buf2 = canvas.toBuffer('image/png', { compressionLevel: 6, filters: canvas.PNG_FILTER_NONE })
+        //     fs.writeFileSync(filePath, buf2)
+        // }
     }
 });
